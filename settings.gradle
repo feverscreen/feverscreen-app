@@ -1,0 +1,2 @@
+rootProject.name='Fever Screen'
+include ':app'
