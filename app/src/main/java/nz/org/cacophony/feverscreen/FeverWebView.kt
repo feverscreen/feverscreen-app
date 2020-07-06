@@ -24,6 +24,7 @@ class FeverWebView : AppCompatActivity() {
             val myWebView: WebView = findViewById(R.id.fever_web_view)
             myWebView.settings.domStorageEnabled = true
             myWebView.settings.javaScriptEnabled = true
+            myWebView.settings.mediaPlaybackRequiresUserGesture = false
             myWebView.webViewClient = WebViewClient()
             myWebView.loadUrl("$uri/static/html/fever.html")
         }
