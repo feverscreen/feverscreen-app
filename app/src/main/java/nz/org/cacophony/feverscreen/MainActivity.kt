@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         }
         scanningView(true)
         autoOpen()
+        deviceManager.startScan()
     }
 
     private fun scanningView(scanning: Boolean) {
@@ -67,16 +68,6 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             deviceListAdapter.value!!.notifyDataSetChanged()
         }
-    }
-
-    override fun onPause() {
-        deviceManager.tearDown()
-        super.onPause()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        deviceManager.startScan()
     }
 
     override fun onDestroy() {
