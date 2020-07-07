@@ -57,7 +57,6 @@ class DeviceManager(
         }
 
         override fun onServiceLost(service: NsdServiceInfo) {
-            devices.remove(service.host.hostAddress)
             Log.e(TAG, "service lost: $service")
         }
 
