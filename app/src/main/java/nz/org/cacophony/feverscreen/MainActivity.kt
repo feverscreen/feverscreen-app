@@ -103,4 +103,9 @@ class MainActivity : AppCompatActivity() {
         val releasesPage = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/feverscreen/feverscreen-app/releases"))
         startActivity(releasesPage)
     }
+
+    fun openNetworkSettings(item: MenuItem) {
+        autoOpen = false
+        startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
+    }
 }
