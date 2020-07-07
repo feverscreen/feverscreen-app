@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -73,5 +75,19 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         deviceManager.tearDown()
         super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    fun refresh(item: MenuItem) {
+        thread {
+            deviceManager.tearDown()
+            deviceList.clear()
+            Thread.sleep(1000)   // Need to wait for device manager to tear down.
+            deviceManager.startScan()
+        }
     }
 }
