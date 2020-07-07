@@ -47,10 +47,10 @@ class MainActivity : AppCompatActivity() {
     private fun scanningView(scanning: Boolean) {
         if (scanning) {
             findViewById<LinearLayout>(R.id.device_scanning_layout).visibility = View.VISIBLE
-            findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.device_recycle_view).visibility = View.GONE
+            findViewById<LinearLayout>(R.id.device_layout).visibility = View.GONE
         } else {
             findViewById<LinearLayout>(R.id.device_scanning_layout).visibility = View.GONE
-            findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.device_recycle_view).visibility = View.VISIBLE
+            findViewById<LinearLayout>(R.id.device_layout).visibility = View.VISIBLE
         }
     }
 

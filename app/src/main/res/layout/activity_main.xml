@@ -6,13 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/device_recycle_view"
+    <LinearLayout
+        android:id="@+id/device_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="16dp"
-        android:visibility="gone" />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/device_recycle_view"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="16dp"
+            android:visibility="visible"
+            android:layout_height="0dp" />
+
+        <TextView
+            android:id="@+id/version_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Feverscreen version: 0.1.1" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/device_scanning_layout"
