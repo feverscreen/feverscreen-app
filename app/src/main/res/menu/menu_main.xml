@@ -9,4 +9,11 @@
         app:showAsAction="never"
         android:onClick="refresh" />
 
+    <item
+        android:id="@+id/releases_page"
+        android:orderInCategory="100"
+        android:title="Releases page"
+        app:showAsAction="never"
+        android:onClick="openReleasesPage" />
+
 </menu>

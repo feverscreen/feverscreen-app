@@ -1,22 +1,26 @@
 package nz.org.cacophony.feverscreen
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.net.nsd.NsdManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import kotlin.concurrent.thread
+
 
 const val TAG = "feverscreen"
 
 class MainActivity : AppCompatActivity() {
 
     private val deviceListAdapter = MutableLiveData<DeviceListAdapter>()
+    private var autoOpen = true
     private lateinit var deviceManager: DeviceManager
     private lateinit var deviceList: DeviceList
 
@@ -36,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             adapter = deviceListAdapter.value
         }
         scanningView(true)
-        autoOpen()
+        runAutoOpen()
         deviceManager.startScan()
     }
 
@@ -50,16 +54,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun autoOpen() {
+    private fun runAutoOpen() {
         thread {
             Thread.sleep(5000)
             runOnUiThread {
                 scanningView(false)
-                when (deviceList.size()) {
-                    0 -> Toast.makeText(applicationContext,"No cameras found", Toast.LENGTH_SHORT).show()
-                    1 -> deviceList.elementAt(0).openManagementInterface()
-                    else -> {
-                        Toast.makeText(applicationContext,"Multiple cameras found. Select what one to view", Toast.LENGTH_SHORT).show()
+                if (autoOpen) {
+                    when (deviceList.size()) {
+                        0 -> Toast.makeText(applicationContext,"No cameras found", Toast.LENGTH_SHORT).show()
+                        1 -> deviceList.elementAt(0).openManagementInterface()
+                        else -> {
+                            Toast.makeText(applicationContext,"Multiple cameras found. Select what one to view", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
@@ -83,11 +89,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun refresh(item: MenuItem) {
+        autoOpen = false
         thread {
             deviceManager.tearDown()
             deviceList.clear()
             Thread.sleep(1000)   // Need to wait for device manager to tear down.
             deviceManager.startScan()
         }
+    }
+
+    fun openReleasesPage(item: MenuItem) {
+        autoOpen = false
+        val releasesPage = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/feverscreen/feverscreen-app/releases"))
+        startActivity(releasesPage)
     }
 }
