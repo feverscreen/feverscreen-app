@@ -104,6 +104,12 @@ class MainActivity : AppCompatActivity() {
         startActivity(releasesPage)
     }
 
+    fun openSupportPage(item: MenuItem) {
+        autoOpen = false
+        val releasesPage = Intent(Intent.ACTION_VIEW, Uri.parse("https://tekahuora.com/pages/support"))
+        startActivity(releasesPage)
+    }
+
     fun openNetworkSettings(item: MenuItem) {
         autoOpen = false
         startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))

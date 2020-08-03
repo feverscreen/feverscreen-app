@@ -23,4 +23,11 @@
         app:showAsAction="never"
         android:onClick="openNetworkSettings" />
 
+    <item
+        android:id="@+id/open_support_page"
+        android:orderInCategory="100"
+        android:title="Support"
+        app:showAsAction="never"
+        android:onClick="openSupportPage" />
+
 </menu>
