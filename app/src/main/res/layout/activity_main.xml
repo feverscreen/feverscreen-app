@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textAlignment="center"
-            android:text="Feverscreen version: 0.1.1" />
+            android:text="Feverscreen version:" />
 
     </LinearLayout>
 
