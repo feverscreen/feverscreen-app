@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -88,14 +89,25 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun refresh(item: MenuItem) {
+    fun refresh(view: View) {
         autoOpen = false
         thread {
+            val refreshButton = findViewById<Button>(R.id.refresh_button)
+            runOnUiThread() {
+                refreshButton.text = "Refreshing..."
+                refreshButton.isClickable = false
+            }
             deviceManager.tearDown()
             deviceList.clear()
             Thread.sleep(1000)   // Need to wait for device manager to tear down.
             deviceManager.startScan()
+            Thread.sleep(5000)
+            runOnUiThread() {
+                refreshButton.text = "Refresh"
+                refreshButton.isClickable = true
+            }
         }
+
     }
 
     fun openReleasesPage(item: MenuItem) {
