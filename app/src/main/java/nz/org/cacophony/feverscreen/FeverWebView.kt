@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 class FeverWebView : AppCompatActivity() {
 
     private var mDetector: GestureDetector? = null
+    private lateinit var myWebView: WebView
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,12 +22,12 @@ class FeverWebView : AppCompatActivity() {
         val extras = intent.extras
         if (extras != null) {
             val uri = extras.getString("uri")
-            val myWebView: WebView = findViewById(R.id.fever_web_view)
+            myWebView = findViewById(R.id.fever_web_view)
             myWebView.settings.domStorageEnabled = true
             myWebView.settings.javaScriptEnabled = true
             myWebView.settings.mediaPlaybackRequiresUserGesture = false
             myWebView.webViewClient = WebViewClient()
-            myWebView.loadUrl("$uri/static/html/fever.html")
+            myWebView.loadUrl(uri)
         }
 
         hideSystemUI()
@@ -40,6 +41,14 @@ class FeverWebView : AppCompatActivity() {
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             hideSystemUi()
             return true
+        }
+    }
+
+    override fun onBackPressed() {
+        if (myWebView.copyBackForwardList().currentIndex > 0) {
+            myWebView.goBack()
+        } else {
+            super.onBackPressed()
         }
     }
 

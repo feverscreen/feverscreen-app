@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                 if (autoOpen) {
                     when (deviceList.size()) {
                         0 -> Toast.makeText(applicationContext,"No cameras found", Toast.LENGTH_SHORT).show()
-                        1 -> deviceList.elementAt(0).openManagementInterface()
+                        1 -> deviceList.elementAt(0).openFeverPage()
                         else -> {
                             Toast.makeText(applicationContext,"Multiple cameras found. Select what one to view", Toast.LENGTH_SHORT).show()
                         }

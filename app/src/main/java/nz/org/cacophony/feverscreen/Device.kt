@@ -35,12 +35,20 @@ class Device(
         }
     }
 
-    fun openManagementInterface() {
+    fun openFeverPage() {
+        openPage("/static/html/fever.html")
+    }
+
+    fun openHomePage() {
+        openPage("/")
+    }
+
+    private fun openPage(path: String) {
+        val uri = Uri.parse("http://$hostAddress:$port$path")
+        Log.i(TAG, "open interface for $name at $uri")
         thread(start = true) {
-            Log.i(TAG, "open interface for $name at $hostAddress")
             if (checkConnectionStatus(timeout = 1000, retries = 1)) {
                 val i = Intent(activity, FeverWebView::class.java)
-                val uri = Uri.parse("http://$hostAddress:$port")
                 i.putExtra("uri", uri.toString())
                 activity.startActivity(i)
             }
