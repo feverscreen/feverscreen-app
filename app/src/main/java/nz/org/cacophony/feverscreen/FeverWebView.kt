@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,9 @@ class FeverWebView : AppCompatActivity() {
             myWebView.settings.domStorageEnabled = true
             myWebView.settings.javaScriptEnabled = true
             myWebView.settings.mediaPlaybackRequiresUserGesture = false
+            myWebView.settings.safeBrowsingEnabled = false
+            myWebView.settings.mixedContentMode = MIXED_CONTENT_ALWAYS_ALLOW
+            myWebView.settings.userAgentString = "feverscreen-app"
             myWebView.webViewClient = WebViewClient()
             myWebView.loadUrl(uri)
         }
