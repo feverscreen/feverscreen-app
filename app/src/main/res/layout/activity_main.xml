@@ -38,6 +38,21 @@
                 android:layout_gravity="center"
                 tools:layout_editor_absoluteX="0dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scanning for deices..."
+                android:gravity="center"
+                android:textSize="18dp"/>
+
+            <TextView
+                android:id="@+id/auto_connect_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Will connect automatically after 10s"
+                android:gravity="center"
+                android:textSize="18dp"/>
+
             <Button
                 android:id="@+id/refresh_button"
                 android:layout_width="wrap_content"
@@ -56,34 +71,6 @@
             android:layout_gravity="center"
             android:textAlignment="center"
             android:text="Feverscreen version:" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/device_scanning_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-
-        android:visibility="gone"
-        android:orientation="vertical" >
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            tools:layout_editor_absoluteX="0dp" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:textSize="30sp"
-            android:text="Connecting to camera..." />
 
     </LinearLayout>
 

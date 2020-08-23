@@ -9,11 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
+import java.util.*
 import kotlin.concurrent.thread
 
 
@@ -22,9 +21,9 @@ const val TAG = "feverscreen"
 class MainActivity : AppCompatActivity() {
 
     private val deviceListAdapter = MutableLiveData<DeviceListAdapter>()
-    private var autoOpen = true
     private lateinit var deviceManager: DeviceManager
     private lateinit var deviceList: DeviceList
+    private var openWebViewAt: Calendar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,36 +41,41 @@ class MainActivity : AppCompatActivity() {
             layoutManager = recyclerLayoutManager
             adapter = deviceListAdapter.value
         }
-        scanningView(true)
-        runAutoOpen()
         deviceManager.startScan()
+        openWebViewIn()
     }
 
-    private fun scanningView(scanning: Boolean) {
-        if (scanning) {
-            findViewById<LinearLayout>(R.id.device_scanning_layout).visibility = View.VISIBLE
-            findViewById<LinearLayout>(R.id.device_layout).visibility = View.GONE
-        } else {
-            findViewById<LinearLayout>(R.id.device_scanning_layout).visibility = View.GONE
-            findViewById<LinearLayout>(R.id.device_layout).visibility = View.VISIBLE
+    private fun openWebViewIn(delayMill: Int = 10000) {
+        val cal: Calendar = Calendar.getInstance()
+        cal.add(Calendar.MILLISECOND, delayMill)
+        openWebViewAt = cal
+        runOnUiThread {
+            findViewById<TextView>(R.id.auto_connect_text_view).text =
+                "Will connect automatically after 10s"
         }
-    }
-
-    private fun runAutoOpen() {
         thread {
-            Thread.sleep(5000)
-            runOnUiThread {
-                scanningView(false)
-                if (autoOpen) {
+            Thread.sleep(delayMill.toLong()+10)
+            val now = Calendar.getInstance()
+            if (openWebViewAt != null && openWebViewAt!! < now) {
+                runOnUiThread {
                     when (deviceList.size()) {
-                        0 -> Toast.makeText(applicationContext,"No cameras found", Toast.LENGTH_SHORT).show()
+                        0 -> {
+                            findViewById<TextView>(R.id.auto_connect_text_view).text = "No cameras found after 10s"
+                        }
                         1 -> deviceList.elementAt(0).openFeverPage()
                         else -> {
-                            Toast.makeText(applicationContext,"Multiple cameras found. Select what one to view", Toast.LENGTH_SHORT).show()
+                            findViewById<TextView>(R.id.auto_connect_text_view).text = "Multiple cameras found. Select what one to view"
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun cancelAutoOpen() {
+        openWebViewAt = null
+        runOnUiThread {
+            findViewById<TextView>(R.id.auto_connect_text_view).text = ""
         }
     }
 
@@ -86,16 +90,28 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    override fun onResume() {
+        openWebViewIn()
+        super.onResume()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (!hasFocus) {
+            cancelAutoOpen()
+        }
+        super.onWindowFocusChanged(hasFocus)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     fun refresh(view: View) {
-        autoOpen = false
         thread {
+            openWebViewIn()
             val refreshButton = findViewById<Button>(R.id.refresh_button)
-            runOnUiThread() {
+            runOnUiThread {
                 refreshButton.text = "Refreshing..."
                 refreshButton.isClickable = false
             }
@@ -104,28 +120,27 @@ class MainActivity : AppCompatActivity() {
             Thread.sleep(1000)   // Need to wait for device manager to tear down.
             deviceManager.startScan()
             Thread.sleep(5000)
-            runOnUiThread() {
+            runOnUiThread {
                 refreshButton.text = "Refresh"
                 refreshButton.isClickable = true
             }
         }
-
     }
 
     fun openReleasesPage(item: MenuItem) {
-        autoOpen = false
+        cancelAutoOpen()
         val releasesPage = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/feverscreen/feverscreen-app/releases"))
         startActivity(releasesPage)
     }
 
     fun openSupportPage(item: MenuItem) {
-        autoOpen = false
+        cancelAutoOpen()
         val releasesPage = Intent(Intent.ACTION_VIEW, Uri.parse("https://tekahuora.com/pages/support"))
         startActivity(releasesPage)
     }
 
     fun openNetworkSettings(item: MenuItem) {
-        autoOpen = false
+        cancelAutoOpen()
         startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
     }
 }
