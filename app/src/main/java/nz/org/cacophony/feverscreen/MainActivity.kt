@@ -1,9 +1,12 @@
 package nz.org.cacophony.feverscreen
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.net.nsd.NsdManager
+import android.os.BatteryManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -43,6 +46,37 @@ class MainActivity : AppCompatActivity() {
         }
         deviceManager.startScan()
         openWebViewIn()
+
+        enableChargeDetectDialog()
+        checkIfCharging(applicationContext)
+    }
+
+    private fun enableChargeDetectDialog() {
+        val filter = IntentFilter()
+        filter.addAction("android.intent.action.ACTION_POWER_CONNECTED")
+        filter.addAction("android.intent.action.ACTION_POWER_DISCONNECTED")
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                checkIfCharging(context)
+            }
+        }
+        registerReceiver(receiver, filter)
+    }
+
+    private var receiver: BroadcastReceiver? = null
+
+    fun checkIfCharging(context: Context) {
+        thread {
+            Thread.sleep(1000) // wait for USB power state to be updated
+            val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            val plugged = intent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
+            val charging = plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB
+            if (!charging) {
+                val i = Intent(context, AlertDialogActivity::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(i)
+            }
+        }
     }
 
     private fun openWebViewIn(delayMill: Int = 10000) {
