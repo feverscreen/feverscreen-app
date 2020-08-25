@@ -20,6 +20,7 @@ class FeverWebView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
 
+        WebView.setWebContentsDebuggingEnabled(true)
         val extras = intent.extras
         if (extras != null) {
             val uri = extras.getString("uri")
