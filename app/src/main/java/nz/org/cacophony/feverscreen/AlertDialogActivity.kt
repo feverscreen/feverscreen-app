@@ -18,8 +18,8 @@ class AlertDialogActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Device is not charging")
-        builder.setMessage("Please attach the tablet to a charger")
+        builder.setTitle("No power connected.")
+        builder.setMessage("please connect power cable")
         builder.setOnDismissListener { super.onBackPressed() }
         alertDialog = builder.create()
         alertDialog?.show()
