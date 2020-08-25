@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                     when (deviceList.size()) {
                         0 -> {
                             findViewById<TextView>(R.id.auto_connect_text_view).text = "No cameras found after 10s"
+                            findViewById<Button>(R.id.network_settings_button).visibility = View.VISIBLE
                         }
                         1 -> deviceList.elementAt(0).openFeverPage()
                         else -> {
@@ -116,6 +117,9 @@ class MainActivity : AppCompatActivity() {
     private fun onDeviceUpdate() {
         runOnUiThread {
             deviceListAdapter.value!!.notifyDataSetChanged()
+            if (deviceList.size() > 0) {
+                findViewById<Button>(R.id.network_settings_button).visibility = View.INVISIBLE
+            }
         }
     }
 
@@ -173,7 +177,15 @@ class MainActivity : AppCompatActivity() {
         startActivity(releasesPage)
     }
 
-    fun openNetworkSettings(item: MenuItem) {
+    fun openNetworkSettingsMenuItem(item: MenuItem) {
+        openNetworkSettings()
+    }
+
+    fun openNetworkSettingsButton(v: View) {
+        openNetworkSettings()
+    }
+
+    fun openNetworkSettings() {
         cancelAutoOpen()
         startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
     }

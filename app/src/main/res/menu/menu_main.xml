@@ -14,7 +14,7 @@
         android:orderInCategory="100"
         android:title="Network Settings"
         app:showAsAction="never"
-        android:onClick="openNetworkSettings" />
+        android:onClick="openNetworkSettingsMenuItem" />
 
     <item
         android:id="@+id/open_support_page"

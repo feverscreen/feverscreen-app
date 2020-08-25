@@ -62,6 +62,16 @@
                 android:onClick="refresh"
                 />
 
+            <Button
+                android:id="@+id/network_settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Open network settings to ebable USB tethering"
+                android:onClick="openNetworkSettingsButton"
+                android:visibility="invisible"
+                />
+
         </LinearLayout>
 
         <TextView
