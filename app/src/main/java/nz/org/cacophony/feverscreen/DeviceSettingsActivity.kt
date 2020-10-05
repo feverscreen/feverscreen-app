@@ -145,13 +145,19 @@ class DeviceSettingsActivity : AppCompatActivity() {
     @Suppress("UNUSED_PARAMETER")
     fun reinstallFeverscreen(view: View) {
         Log.i(TAG, "reinstall feverscreen")
-        thread {
+        thread(start = true) {
             val url = getUrl("/api/reinstall")
             val request = getAuthReq(url)
                 .newBuilder()
+                .put(FormBody.Builder().build())
                 .build()
             val response = client.newCall(request).execute()
             response.close()
+            val message = if (response.isSuccessful) {"Reinstalling feverscreen. Might take a few minutes."} else {"failed to trigger reinstall"}
+            runOnUiThread {
+                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+            }
+
         }
     }
 
