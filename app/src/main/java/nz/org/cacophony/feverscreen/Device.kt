@@ -39,8 +39,11 @@ class Device(
         openPage("/static/html/fever.html")
     }
 
-    fun openHomePage() {
-        openPage("/")
+    fun openSettingsIntent() {
+        val i = Intent(activity, DeviceSettingsActivity::class.java)
+        i.putExtra("deviceName", name)
+        i.putExtra("deviceIP", hostAddress)
+        activity.startActivity(i)
     }
 
     private fun openPage(path: String) {

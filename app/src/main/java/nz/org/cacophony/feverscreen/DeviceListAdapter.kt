@@ -27,7 +27,7 @@ class DeviceListAdapter(private val devices: DeviceList) : RecyclerView.Adapter<
         val device = devices.elementAt(position)
         holder.deviceNameView.text = device.name
         holder.clickDevice.setOnClickListener { device.openFeverPage() }
-        holder.deviceSettings.setOnClickListener { device.openHomePage() }
+        holder.deviceSettings.setOnClickListener { device.openSettingsIntent() }
     }
 
     override fun getItemCount() = devices.size()

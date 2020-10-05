@@ -21,8 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AlertDialogActivity"
-            android:theme="@style/Theme.Transparent"/>
+        <activity
+            android:name=".DeviceSettingsActivity"
+            android:label="@string/title_activity_device_settings"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".AlertDialogActivity"
+            android:theme="@style/Theme.Transparent" />
         <activity
             android:name=".FeverWebView"
             android:label="@string/title_activity_webview"
