@@ -92,14 +92,24 @@ class MainActivity : AppCompatActivity() {
             val now = Calendar.getInstance()
             if (openWebViewAt != null && openWebViewAt!! < now) {
                 runOnUiThread {
-                    when (deviceList.size()) {
-                        0 -> {
-                            findViewById<TextView>(R.id.auto_connect_text_view).text = "No cameras found after 10s"
-                            findViewById<Button>(R.id.network_settings_button).visibility = View.VISIBLE
+                    var openedDevice = false
+                    for ((_, device) in deviceList.getMap()) {
+                        if (device.connectionInterface == "usb") {
+                            device.openFeverPage()
+                            openedDevice = true
+                            break
                         }
-                        1 -> deviceList.elementAt(0).openFeverPage()
-                        else -> {
-                            findViewById<TextView>(R.id.auto_connect_text_view).text = "Multiple cameras found. Select what one to view"
+                    }
+                    if (!openedDevice) {
+                        when (deviceList.size()) {
+                            0 -> {
+                                findViewById<TextView>(R.id.auto_connect_text_view).text = "No cameras found after 10s"
+                                findViewById<Button>(R.id.network_settings_button).visibility = View.VISIBLE
+                            }
+                            1 -> deviceList.elementAt(0).openFeverPage()
+                            else -> {
+                                findViewById<TextView>(R.id.auto_connect_text_view).text = "Multiple cameras found. Select what one to view"
+                            }
                         }
                     }
                 }

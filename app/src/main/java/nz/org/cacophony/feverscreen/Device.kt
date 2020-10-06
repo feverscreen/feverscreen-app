@@ -50,14 +50,16 @@ class Device(
             .url(urlStr)
             .addHeader("Authorization", "Basic YWRtaW46ZmVhdGhlcnM=")
             .build()
-        val response = client.newCall(request).execute()
-        val body = response.body()?.string() ?: ""
-        if (body == "") {
-            connectionInterface = "" // Unknown interface as could not get response
-        } else if (hostAddress.substringBeforeLast(".") == body.substringBeforeLast(".")) {
-            connectionInterface = "usb"
-        } else {
-            connectionInterface = "wifi"
+        try {
+            val response = client.newCall(request).execute()
+            val body = response.body()?.string() ?: ""
+            connectionInterface = when {
+                body == "" -> { "" } // Unknown interface as could not get response
+                hostAddress.substringBeforeLast(".") == body.substringBeforeLast(".") -> { "usb" }
+                else -> { "wifi" }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 
