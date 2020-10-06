@@ -14,6 +14,8 @@ class DeviceListAdapter(private val devices: DeviceList) : RecyclerView.Adapter<
         val deviceNameView = v.findViewById(R.id.device_name) as TextView
         val clickDevice = v.findViewById(R.id.device_info) as LinearLayout
         val deviceSettings = v.findViewById(R.id.device_settings) as ImageView
+        val usbConnection = v.findViewById(R.id.device_connection_usb) as ImageView
+        val wifiConnection = v.findViewById(R.id.device_connection_wifi) as ImageView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup,
@@ -28,6 +30,20 @@ class DeviceListAdapter(private val devices: DeviceList) : RecyclerView.Adapter<
         holder.deviceNameView.text = device.name
         holder.clickDevice.setOnClickListener { device.openFeverPage() }
         holder.deviceSettings.setOnClickListener { device.openSettingsIntent() }
+        when (device.connectionInterface) {
+            "usb" -> {
+                holder.usbConnection.visibility = View.VISIBLE
+                holder.wifiConnection.visibility = View.GONE
+            }
+            "wifi" -> {
+                holder.wifiConnection.visibility = View.VISIBLE
+                holder.usbConnection.visibility = View.GONE
+            }
+            else -> {
+                holder.wifiConnection.visibility = View.GONE
+                holder.usbConnection.visibility = View.GONE
+            }
+        }
     }
 
     override fun getItemCount() = devices.size()
