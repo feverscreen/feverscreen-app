@@ -2,6 +2,7 @@ package nz.org.cacophony.feverscreen
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -9,11 +10,15 @@ import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 
 class FeverWebView : AppCompatActivity() {
 
     private var mDetector: GestureDetector? = null
     private lateinit var myWebView: WebView
+    private var uri: String = ""
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +28,7 @@ class FeverWebView : AppCompatActivity() {
         WebView.setWebContentsDebuggingEnabled(true)
         val extras = intent.extras
         if (extras != null) {
-            val uri = extras.getString("uri")
+            uri = extras.getString("uri") ?: ""
             myWebView = findViewById(R.id.fever_web_view)
             myWebView.settings.domStorageEnabled = true
             myWebView.settings.javaScriptEnabled = true
@@ -40,6 +45,29 @@ class FeverWebView : AppCompatActivity() {
         val myView = findViewById<View>(R.id.fever_web_view)
         mDetector = GestureDetector(this, HideSystemUiGestureListener {hideSystemUI()})
         myView.setOnTouchListener { _, event -> mDetector!!.onTouchEvent(event) }
+        checkConnectionLoop()
+    }
+
+    private fun checkConnectionLoop() {
+        thread(start = true) {
+            while (true) {
+                Log.i(TAG, "Checking connection to '$uri'")
+                try {
+                    val conn = URL(uri).openConnection() as HttpURLConnection
+                    conn.connectTimeout = 3000
+                    conn.readTimeout = 3000
+                    conn.responseCode
+                    conn.disconnect()
+                } catch (e: Exception) {
+                    Log.e(TAG, "failed connecting to: $e")
+                    runOnUiThread {
+                        super.onBackPressed()
+                    }
+                    break
+                }
+                Thread.sleep(5_000)
+            }
+        }
     }
 
     class HideSystemUiGestureListener(val hideSystemUi: (() -> Unit)) : GestureDetector.SimpleOnGestureListener() {
