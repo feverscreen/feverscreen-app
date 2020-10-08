@@ -19,6 +19,8 @@ class FeverWebView : AppCompatActivity() {
     private var mDetector: GestureDetector? = null
     private lateinit var myWebView: WebView
     private var uri: String = ""
+    @Volatile
+    private var open: Boolean = true
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,8 +52,8 @@ class FeverWebView : AppCompatActivity() {
 
     private fun checkConnectionLoop() {
         thread(start = true) {
-            while (true) {
-                Log.i(TAG, "Checking connection to '$uri'")
+            while (open) {
+                Log.d(TAG, "Checking connection to '$uri'")
                 try {
                     val conn = URL(uri).openConnection() as HttpURLConnection
                     conn.connectTimeout = 3000
@@ -61,7 +63,7 @@ class FeverWebView : AppCompatActivity() {
                 } catch (e: Exception) {
                     Log.e(TAG, "failed connecting to: $e")
                     runOnUiThread {
-                        super.onBackPressed()
+                        onBackPressed()
                     }
                     break
                 }
@@ -78,6 +80,7 @@ class FeverWebView : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        open = false
         if (myWebView.copyBackForwardList().currentIndex > 0) {
             myWebView.goBack()
         } else {
