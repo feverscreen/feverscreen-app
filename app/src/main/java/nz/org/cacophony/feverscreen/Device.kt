@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import okhttp3.HttpUrl
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.ConnectException
@@ -26,17 +26,7 @@ class Device(
 
     init {
         Log.i(TAG, "Created new device: $name")
-        for (i in 3.downTo(0)) {
-            checkConnectionStatus()
-            if (sm.state == DeviceState.CONNECTED) {
-                break
-            }
-            if (i > 0) {
-                Log.i(TAG, "failed to connect to interface, trying $i more times")
-            } else {
-                Log.e(TAG, "failed to connect to interface")
-            }
-        }
+        checkConnectionStatus()
         checkConnectionInterface()
     }
 
@@ -82,7 +72,7 @@ class Device(
         }
     }
 
-    private fun checkConnectionStatus(timeout: Int = 3000, retries: Int = 3): Boolean {
+    fun checkConnectionStatus(timeout: Int = 3000, retries: Int = 3): Boolean {
         var connected = false
         for (i in 1..retries) {
             try {

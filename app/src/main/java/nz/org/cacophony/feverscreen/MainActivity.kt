@@ -8,6 +8,7 @@ import android.net.Uri
 import android.net.nsd.NsdManager
 import android.os.BatteryManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         enableChargeDetectDialog()
         checkIfCharging(applicationContext)
+        checkConnectionLoop()
     }
 
     private fun enableChargeDetectDialog() {
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             if (openWebViewAt != null && openWebViewAt!! < now) {
                 runOnUiThread {
                     var openedDevice = false
-                    for ((_, device) in deviceList.getMap()) {
+                    for ((_, device) in deviceList.getConnectedMap()) {
                         if (device.connectionInterface == "usb") {
                             device.openFeverPage()
                             openedDevice = true
@@ -198,5 +200,19 @@ class MainActivity : AppCompatActivity() {
     fun openNetworkSettings() {
         cancelAutoOpen()
         startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
+    }
+
+    private fun checkConnectionLoop() {
+        thread {
+            while (true) {
+                Log.i(TAG, "checking devices connection status")
+                for ((_, device) in deviceList.getAllMap()) {
+                    device.checkConnectionStatus()
+                    deviceList.setDeviceConnected(device.hostAddress, device.sm.state == DeviceState.CONNECTED)
+                }
+                onDeviceUpdate()
+                Thread.sleep(5_000)
+            }
+        }
     }
 }

@@ -3,38 +3,34 @@ package nz.org.cacophony.feverscreen
 import android.util.Log
 
 class DeviceList {
-    private val devices = sortedMapOf<String, Device>()
+    private val connectedDevices = sortedMapOf<String, Device>()
+    private val allDevices = sortedMapOf<String, Device>()
     private var onChanged: (() -> Unit)? = null
 
     @Synchronized
     fun add(d: Device) {
         Log.i(TAG, "adding new device")
-        devices[d.hostAddress] = d
+        allDevices[d.hostAddress] = d
+        setDeviceConnected(d.hostAddress, d.sm.state == DeviceState.CONNECTED)
         notifyChange()
     }
 
     @Synchronized
-    fun remove(name: String) {
-        if (devices.remove(name) != null) {
-            notifyChange()
-        }
-    }
-
-    @Synchronized
     fun clear() {
-        val hadItems = devices.size > 0
-        devices.clear()
+        val hadItems = connectedDevices.size > 0
+        connectedDevices.clear()
+        allDevices.clear()
         if (hadItems) notifyChange()
     }
 
     @Synchronized
     fun elementAt(i: Int): Device {
-        return devices.values.elementAt(i)
+        return connectedDevices.values.elementAt(i)
     }
 
     @Synchronized
     fun size(): Int {
-        return devices.size
+        return connectedDevices.size
     }
 
     @Synchronized
@@ -47,13 +43,28 @@ class DeviceList {
     }
 
     @Synchronized
-    fun has(name: String): Boolean {
-        return devices.containsKey(name)
+    fun getConnectedMap(): Map<String, Device> {
+        return connectedDevices
     }
 
     @Synchronized
-    fun getMap(): Map<String, Device> {
-        return devices
+    fun getAllMap(): Map<String, Device> {
+        return allDevices
+    }
+
+    fun setDeviceConnected(deviceHostAddress: String, connected: Boolean) {
+        if (!allDevices.containsKey(deviceHostAddress)) {
+            Log.e(TAG, "trying to set device connected '$deviceHostAddress' that has not been added yet")
+            return
+        }
+
+        if (connected && !connectedDevices.containsKey(deviceHostAddress)) {
+            connectedDevices[deviceHostAddress] = allDevices[deviceHostAddress]
+            notifyChange()
+        } else if (!connected && connectedDevices.containsKey(deviceHostAddress)) {
+            connectedDevices.remove(deviceHostAddress)
+            notifyChange()
+        }
     }
 }
 
