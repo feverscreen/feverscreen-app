@@ -281,12 +281,17 @@ class MainActivity : AppCompatActivity() {
     private fun checkConnectionLoop() {
         thread {
             while (true) {
-                for ((_, device) in deviceList.getAllMap()) {
-                    device.checkConnectionStatus()
-                    deviceList.setDeviceConnected(device.hostAddress, device.sm.state == DeviceState.CONNECTED)
+                try {
+                    for ((_, device) in deviceList.getAllMap()) {
+                        device.checkConnectionStatus()
+                        deviceList.setDeviceConnected(device.hostAddress, device.sm.state == DeviceState.CONNECTED)
+                    }
+                    onDeviceUpdate()
+                    Thread.sleep(5_000)
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
                 }
-                onDeviceUpdate()
-                Thread.sleep(5_000)
+
             }
         }
     }
