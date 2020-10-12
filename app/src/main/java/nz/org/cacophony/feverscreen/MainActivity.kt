@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         deviceManager.tearDown()
-        applicationContext.unregisterReceiver(receiver)
+        unregisterReceiver(receiver)
         super.onDestroy()
     }
 
