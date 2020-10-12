@@ -174,9 +174,10 @@ class MainActivity : AppCompatActivity() {
             val stableReleasePatter = Regex("v\\d+\\.\\d+\\.\\d+")
             for (i in 0 until responseJSON.length()) {
                 val release = responseJSON.getJSONObject(i)
-                Log.i(TAG, release.toString())
+                val draft = release.getBoolean("draft")
+                val prerelease = release.getBoolean("prerelease")
                 val tagName = release.getString("tag_name")
-                if (stableReleasePatter.matches(tagName)) {
+                if (!draft && !prerelease && stableReleasePatter.matches(tagName)) {
                     latestReleaseTagName = tagName
                     latestReleaseJSON = release
                     break
@@ -206,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.i(TAG, "is not latest version")
                 runOnUiThread {
-                    downloadSoftwareButton.text = "New software available ($latestReleaseTagName)"
+                    downloadSoftwareButton.text = "Download latest stable release ($latestReleaseTagName)"
                     downloadSoftwareButton.visibility = View.VISIBLE
                 }
             }
