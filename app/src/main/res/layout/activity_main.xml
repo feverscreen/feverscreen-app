@@ -74,6 +74,14 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/button_download_new_software"
+            android:onClick="downloadNewSoftware"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/version_text"
             android:layout_width="match_parent"

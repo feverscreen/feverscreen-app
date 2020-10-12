@@ -16,6 +16,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -28,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var deviceManager: DeviceManager
     private lateinit var deviceList: DeviceList
     private var openWebViewAt: Calendar? = null
+    private var downloadNewSoftwareLink: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,12 +143,81 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         deviceManager.tearDown()
+        applicationContext.unregisterReceiver(receiver)
         super.onDestroy()
     }
 
     override fun onResume() {
         openWebViewIn()
+        thread(start = true) {
+            checkForUpdate()
+        }
         super.onResume()
+    }
+
+    private fun checkForUpdate() {
+        try {
+            val url = HttpUrl.parse("https://api.github.com/repos/feverscreen/feverscreen-app/releases")
+            val request = Request.Builder()
+                .url(url)
+                .build()
+            val response = OkHttpClient().newCall(request).execute()
+            val body = response.body()
+            if (body == null) {
+                Log.e(TAG, "failed to get response body when checking for an app update")
+                return
+            }
+            val bodyString = body.string()
+            val responseJSON = JSONArray(bodyString)
+            var latestReleaseJSON = JSONObject()
+            var latestReleaseTagName = ""
+            val stableReleasePatter = Regex("v\\d+\\.\\d+\\.\\d+")
+            for (i in 0 until responseJSON.length()) {
+                val release = responseJSON.getJSONObject(i)
+                Log.i(TAG, release.toString())
+                val tagName = release.getString("tag_name")
+                if (stableReleasePatter.matches(tagName)) {
+                    latestReleaseTagName = tagName
+                    latestReleaseJSON = release
+                    break
+                }
+            }
+
+            val assets = latestReleaseJSON.getJSONArray("assets")
+            downloadNewSoftwareLink = ""
+            for (i in 0 until assets.length()) {
+                val asset = assets.getJSONObject(i)
+                if (asset.getString("name").endsWith(".apk")) {
+                    downloadNewSoftwareLink = asset.getString("browser_download_url")
+                }
+            }
+            if (downloadNewSoftwareLink == "") {
+                Log.e(TAG, "unable to find link to download software")
+                return
+            }
+
+
+            val downloadSoftwareButton = findViewById<Button>(R.id.button_download_new_software)
+            if (latestReleaseTagName.contains(BuildConfig.VERSION_NAME)) {
+                Log.i(TAG, "is latest version $latestReleaseTagName, ${BuildConfig.VERSION_NAME}")
+                runOnUiThread {
+                    downloadSoftwareButton.visibility = View.GONE
+                }
+            } else {
+                Log.i(TAG, "is not latest version")
+                runOnUiThread {
+                    downloadSoftwareButton.text = "New software available ($latestReleaseTagName)"
+                    downloadSoftwareButton.visibility = View.VISIBLE
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+        }
+    }
+
+    fun downloadNewSoftware(v: View) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadNewSoftwareLink))
+        startActivity(browserIntent)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -205,7 +280,6 @@ class MainActivity : AppCompatActivity() {
     private fun checkConnectionLoop() {
         thread {
             while (true) {
-                Log.i(TAG, "checking devices connection status")
                 for ((_, device) in deviceList.getAllMap()) {
                     device.checkConnectionStatus()
                     deviceList.setDeviceConnected(device.hostAddress, device.sm.state == DeviceState.CONNECTED)
