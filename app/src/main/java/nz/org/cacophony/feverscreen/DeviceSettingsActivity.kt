@@ -102,7 +102,6 @@ class DeviceSettingsActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-            throw Exception("failed to update location on device")
         } else {
             runOnUiThread {
                 Toast.makeText(
