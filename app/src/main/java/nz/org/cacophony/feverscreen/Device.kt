@@ -76,6 +76,7 @@ class Device(
         var connected = false
         for (i in 1..retries) {
             try {
+                checkConnectionInterface()
                 val conn = URL("http://$hostAddress").openConnection() as HttpURLConnection
                 conn.connectTimeout = timeout
                 conn.readTimeout = timeout

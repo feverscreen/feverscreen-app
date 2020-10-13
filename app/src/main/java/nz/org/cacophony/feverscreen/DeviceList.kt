@@ -58,10 +58,10 @@ class DeviceList {
             return
         }
 
-        if (connected && !connectedDevices.containsKey(deviceHostAddress)) {
+        if (connected) {
             connectedDevices[deviceHostAddress] = allDevices[deviceHostAddress]
             notifyChange()
-        } else if (!connected && connectedDevices.containsKey(deviceHostAddress)) {
+        } else if (!connected) {
             connectedDevices.remove(deviceHostAddress)
             notifyChange()
         }
