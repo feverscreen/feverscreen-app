@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -16,17 +17,20 @@ import kotlin.concurrent.thread
 
 class DeviceSettingsActivity : AppCompatActivity() {
 
-    private val client = OkHttpClient()
+    private lateinit var client: OkHttpClient
 
     private lateinit var deviceName: String
     private lateinit var deviceIP: String
     private var version: String = ""
     private var releaseChannel: String = ""
     private var usb0Addr: String = ""
+    private var updateCandidate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device_settings)
+
+        client = OkHttpClient.Builder().build()
 
         deviceName = intent.extras?.getString("deviceName") ?: ""
         deviceIP = intent.extras?.getString("deviceIP") ?: ""
@@ -52,14 +56,20 @@ class DeviceSettingsActivity : AppCompatActivity() {
     }
 
     private fun getVersionData() {
-        val url = getUrl("/api/version")
-        val request = getAuthReq(url)
-        val response = client.newCall(request).execute()
-        val versionData = JSONObject(getResponseBody(response).string())
-        version = if (versionData.has("appVersion")) versionData.getString("appVersion")
-        else "could not find version"
-        releaseChannel = if (versionData.has("channel")) versionData.getString("channel")
-        else "could not find release channel"
+        try {
+            val url = getUrl("/api/version")
+            val request = getAuthReq(url)
+            val response = client.newCall(request).execute()
+            val versionData = JSONObject(getResponseBody(response).string())
+            version = if (versionData.has("appVersion")) versionData.getString("appVersion")
+            else "could not find version"
+            releaseChannel = if (versionData.has("channel")) versionData.getString("channel")
+            else "could not find release channel"
+            updateCandidate = if (versionData.has("appUpdateCandidate")) versionData.getString("appUpdateCandidate")
+            else ""
+        } catch (e :Exception) {
+            Log.e(TAG, e.toString())
+        }
     }
     
     private fun getUSBAddr() {
@@ -142,21 +152,54 @@ class DeviceSettingsActivity : AppCompatActivity() {
 
 
     @Suppress("UNUSED_PARAMETER")
-    fun reinstallFeverscreen(view: View) {
-        Log.i(TAG, "reinstall feverscreen")
+    fun updateFeverscreen(view: View) {
+        Log.i(TAG, "update feverscreen")
         thread(start = true) {
-            val url = getUrl("/api/reinstall")
+            val url = getUrl("/api/update")
             val request = getAuthReq(url)
                 .newBuilder()
                 .put(FormBody.Builder().build())
                 .build()
             val response = client.newCall(request).execute()
             response.close()
-            val message = if (response.isSuccessful) {"Reinstalling feverscreen. Might take a few minutes."} else {"failed to trigger reinstall"}
+            val message = if (response.isSuccessful) {"Updating feverscreen. Might take a few minutes."} else {"failed to trigger update"}
             runOnUiThread {
                 Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
             }
 
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun checkForUpdate(view: View) {
+        Log.i(TAG, "checking for available feverscreen updates")
+        thread(start = true) {
+            try {
+                val updateButton = findViewById<Button>(R.id.check_for_update_button)
+                runOnUiThread {
+                    updateButton.isEnabled = false
+                    updateButton.text = "checking..."
+                    Toast.makeText(applicationContext, "Checking for updates", Toast.LENGTH_LONG).show()
+                }
+                val url = getUrl("/api/apt-update")
+                val request = getAuthReq(url)
+                    .newBuilder()
+                    .put(FormBody.Builder().build())
+                    .build()
+                //TODO try catch
+                val response = client.newCall(request).execute()
+                response.close()
+                getVersionData()
+                updateVersionText()
+                val message = if (response.isSuccessful) {"Latest version available is $updateCandidate"} else {"failed to check for updates"}
+                runOnUiThread {
+                    updateButton.isEnabled = true
+                    updateButton.text = "check for update"
+                    Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+                }
+            } catch (e :Exception) {
+                Log.e(TAG, e.toString())
+            }
         }
     }
 
@@ -191,9 +234,17 @@ class DeviceSettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateAvailable(): Boolean {
+        return (version != updateCandidate && updateCandidate != "")
+    }
+
     private fun updateVersionText() {
         runOnUiThread {
-            findViewById<TextView>(R.id.device_version_text_view).text = version
+            if (updateAvailable()) {
+                findViewById<TextView>(R.id.device_version_text_view).text = "$version, update available to $updateCandidate"
+            } else {
+                findViewById<TextView>(R.id.device_version_text_view).text = "$version"
+            }
         }
     }
 

@@ -58,7 +58,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text=""
                 android:textSize="15sp" />
 
             <LinearLayout
@@ -67,11 +66,22 @@
                 android:layout_weight="1" />
 
             <Button
-                android:onClick="reinstallFeverscreen"
+                android:id="@+id/update_button"
+                android:onClick="updateFeverscreen"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="reinstall"
+                android:text="update"
+                android:layout_gravity="end" />
+
+
+            <Button
+                android:id="@+id/check_for_update_button"
+                android:onClick="checkForUpdate"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="check for update"
                 android:layout_gravity="end" />
 
         </LinearLayout>
@@ -100,7 +110,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text=""
                 android:textSize="15sp" />
 
             <LinearLayout
@@ -143,7 +152,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text=""
                 android:textSize="15sp" />
 
             <LinearLayout
