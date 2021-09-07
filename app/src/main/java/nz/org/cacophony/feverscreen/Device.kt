@@ -28,6 +28,9 @@ class Device(
         Log.i(TAG, "Created new device: $name")
         checkConnectionStatus()
         checkConnectionInterface()
+        if (connectionInterface == "usb") {
+            checkAdbBridge()
+        }
     }
 
     fun openFeverPage() {
@@ -53,6 +56,21 @@ class Device(
         }
     }
 
+    private fun checkAdbBridge() {
+        val urlStr = URL("http", hostAddress, 80, "/api/adb-bridge").toString()
+        val request = Request.Builder()
+            .url(urlStr)
+            .addHeader("Authorization", "Basic YWRtaW46ZmVhdGhlcnM=")
+            .build()
+        try {
+            val response = client.newCall(request).execute()
+            val body = response.body()?.string() ?: ""
+            Log.i(TAG, "Adb Bridge: $body")
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+        }
+    }
+
     fun openSettingsIntent() {
         val i = Intent(activity, DeviceSettingsActivity::class.java)
         i.putExtra("deviceName", name)
@@ -67,6 +85,7 @@ class Device(
             if (checkConnectionStatus(timeout = 1000, retries = 1)) {
                 val i = Intent(activity, FeverWebView::class.java)
                 i.putExtra("uri", uri.toString())
+                i.putExtra("deviceConnection", connectionInterface)
                 activity.startActivity(i)
             }
         }

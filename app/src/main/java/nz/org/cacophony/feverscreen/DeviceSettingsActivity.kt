@@ -24,6 +24,7 @@ class DeviceSettingsActivity : AppCompatActivity() {
     private var version: String = ""
     private var releaseChannel: String = ""
     private var usb0Addr: String = ""
+    private var adbConnection: String = ""
     private var updateCandidate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {

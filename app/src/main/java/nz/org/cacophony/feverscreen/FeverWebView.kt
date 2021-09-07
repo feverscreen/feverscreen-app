@@ -6,18 +6,26 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.webkit.PermissionRequest
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.webkit.ProxyConfig
+import androidx.webkit.ProxyController
+import okhttp3.FormBody
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.Executor
 import kotlin.concurrent.thread
+
 
 class FeverWebView : AppCompatActivity() {
 
     private var mDetector: GestureDetector? = null
     private lateinit var myWebView: WebView
+    private lateinit var proxyConfig: ProxyConfig
     private var uri: String = ""
     @Volatile
     private var open: Boolean = true
@@ -30,18 +38,40 @@ class FeverWebView : AppCompatActivity() {
         WebView.setWebContentsDebuggingEnabled(true)
         val extras = intent.extras
         if (extras != null) {
-            uri = extras.getString("uri") ?: ""
-            myWebView = findViewById(R.id.fever_web_view)
-            myWebView.settings.domStorageEnabled = true
-            myWebView.settings.javaScriptEnabled = true
-            myWebView.settings.mediaPlaybackRequiresUserGesture = false
-            myWebView.settings.safeBrowsingEnabled = false
-            myWebView.settings.mixedContentMode = MIXED_CONTENT_ALWAYS_ALLOW
-            myWebView.settings.userAgentString = "feverscreen-app"
-            myWebView.webViewClient = WebViewClient()
-            myWebView.loadUrl(uri)
+            loadWebUI(extras)
+//            command.run()
+//            proxyConfig = ProxyConfig.Builder().addProxyRule("https://google.com").addDirect().build()
+//            ProxyController.getInstance().setProxyOverride(proxyConfig,
+//                Executor { command ->
+//                }, Runnable { Log.w(TAG, "WebView proxy") })
+        }
+    }
+
+    private fun loadWebUI(extras: Bundle) {
+        val connection = extras.getString("deviceConnection")
+        uri = if (connection == "wifi") {
+            extras.getString("uri") ?: ""
+        } else {
+            "http://localhost:8080/static/html/fever.html"
         }
 
+        myWebView = findViewById(R.id.fever_web_view)
+        myWebView.settings.domStorageEnabled = true
+        myWebView.settings.javaScriptEnabled = true
+        myWebView.settings.mediaPlaybackRequiresUserGesture = false
+        myWebView.settings.safeBrowsingEnabled = false
+        myWebView.settings.mixedContentMode = MIXED_CONTENT_ALWAYS_ALLOW
+        myWebView.settings.userAgentString = "feverscreen-app"
+        myWebView.settings.allowFileAccessFromFileURLs = true
+        myWebView.settings.allowUniversalAccessFromFileURLs = true
+        myWebView.webViewClient = WebViewClient()
+        myWebView.webChromeClient = object: WebChromeClient() {
+            override fun onPermissionRequest(request: PermissionRequest) {
+                request.grant(request.resources)
+            }
+        }
+
+        myWebView.loadUrl(uri)
         hideSystemUI()
 
         val myView = findViewById<View>(R.id.fever_web_view)
@@ -97,4 +127,6 @@ class FeverWebView : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
+
+
 }
