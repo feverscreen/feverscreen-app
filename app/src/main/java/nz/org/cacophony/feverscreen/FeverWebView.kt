@@ -1,17 +1,20 @@
 package nz.org.cacophony.feverscreen
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.webkit.PermissionRequest
-import android.webkit.WebChromeClient
+import android.webkit.*
 import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.webkit.ProxyConfig
 import androidx.webkit.ProxyController
 import okhttp3.FormBody
@@ -38,12 +41,35 @@ class FeverWebView : AppCompatActivity() {
         WebView.setWebContentsDebuggingEnabled(true)
         val extras = intent.extras
         if (extras != null) {
+            checkCameraPermissions()
             loadWebUI(extras)
-//            command.run()
-//            proxyConfig = ProxyConfig.Builder().addProxyRule("https://google.com").addDirect().build()
-//            ProxyController.getInstance().setProxyOverride(proxyConfig,
-//                Executor { command ->
-//                }, Runnable { Log.w(TAG, "WebView proxy") })
+
+        }
+    }
+
+    private fun checkCameraPermissions() {
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    Log.i("Permission: ", "Granted")
+                } else {
+                    Log.i("Permission: ", "Denied")
+                }
+            }
+        when (PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) -> {
+                Log.i("Permission: ", "Granted")
+            }
+            else -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.CAMERA
+                )
+            }
         }
     }
 
@@ -55,6 +81,9 @@ class FeverWebView : AppCompatActivity() {
             "http://localhost:8080/static/html/fever.html"
         }
 
+        var finishedLoading = true;
+        var redirect = false;
+
         myWebView = findViewById(R.id.fever_web_view)
         myWebView.settings.domStorageEnabled = true
         myWebView.settings.javaScriptEnabled = true
@@ -64,7 +93,12 @@ class FeverWebView : AppCompatActivity() {
         myWebView.settings.userAgentString = "feverscreen-app"
         myWebView.settings.allowFileAccessFromFileURLs = true
         myWebView.settings.allowUniversalAccessFromFileURLs = true
-        myWebView.webViewClient = WebViewClient()
+        myWebView.webViewClient = object: WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                view?.clearHistory()
+            }
+        }
         myWebView.webChromeClient = object: WebChromeClient() {
             override fun onPermissionRequest(request: PermissionRequest) {
                 request.grant(request.resources)
@@ -77,10 +111,10 @@ class FeverWebView : AppCompatActivity() {
         val myView = findViewById<View>(R.id.fever_web_view)
         mDetector = GestureDetector(this, HideSystemUiGestureListener {hideSystemUI()})
         myView.setOnTouchListener { _, event -> mDetector!!.onTouchEvent(event) }
-        checkConnectionLoop()
+        checkConnectionLoop(extras)
     }
 
-    private fun checkConnectionLoop() {
+    private fun checkConnectionLoop(extras: Bundle) {
         thread(start = true) {
             while (open) {
                 Log.d(TAG, "Checking connection to '$uri'")
@@ -93,9 +127,9 @@ class FeverWebView : AppCompatActivity() {
                 } catch (e: Exception) {
                     Log.e(TAG, "failed connecting to: $e")
                     runOnUiThread {
-                        onBackPressed()
+                        uri = extras.getString("uri") ?: ""
+                        myWebView.loadUrl(uri)
                     }
-                    break
                 }
                 Thread.sleep(5_000)
             }

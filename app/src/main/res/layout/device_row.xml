@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/row"
+    android:id="@+id/device_info"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="wrap_content"
     android:layout_margin="0sp"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
@@ -11,49 +11,42 @@
     android:orientation="horizontal"
     android:padding="4sp">
 
-    <LinearLayout
-        android:id="@+id/device_info"
-        android:layout_width="match_parent"
-        android:layout_marginStart="10dp"
+    <TextView
+        android:id="@+id/device_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_height="wrap_content">
+        android:layout_margin="0dp"
+        android:layout_weight="1"
+        android:text="Device Name"
+        android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/device_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="0dp"
-                android:textSize="20sp"
-                android:text="Device Name"
-                android:layout_weight="1"
-                />
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
 
-        <ImageView
-            android:id="@+id/device_connection_usb"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_marginEnd="15dp"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_usb_black_18dp" />
+    <ImageView
+        android:id="@+id/device_connection_usb"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="15dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_usb_black_18dp" />
 
-        <ImageView
-            android:id="@+id/device_connection_wifi"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_marginEnd="15dp"
-            app:srcCompat="@drawable/ic_wifi_black_18dp"
-            android:visibility="gone" />
+    <ImageView
+        android:id="@+id/device_connection_wifi"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="15dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_wifi_black_18dp" />
 
-        <ImageView
-            android:id="@+id/device_settings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            app:srcCompat="@drawable/ic_settings_black_24dp" />
-
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/device_settings"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="15dp"
+        app:srcCompat="@drawable/ic_settings_black_24dp" />
 
 </LinearLayout>

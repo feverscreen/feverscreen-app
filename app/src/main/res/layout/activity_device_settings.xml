@@ -13,7 +13,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:layout_gravity="center_vertical"
             android:padding="5dp">
 
@@ -41,7 +41,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="5dp">
 
@@ -67,22 +67,24 @@
 
             <Button
                 android:id="@+id/update_button"
-                android:onClick="updateFeverscreen"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:gravity="center"
-                android:text="update"
-                android:layout_gravity="end" />
+                android:minHeight="60dp"
+                android:onClick="updateFeverscreen"
+                android:text="update" />
 
 
             <Button
                 android:id="@+id/check_for_update_button"
-                android:onClick="checkForUpdate"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:gravity="center"
-                android:text="check for update"
-                android:layout_gravity="end" />
+                android:minHeight="60dp"
+                android:onClick="checkForUpdate"
+                android:text="check for update" />
 
         </LinearLayout>
 
@@ -93,7 +95,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="5dp">
 
@@ -118,12 +120,13 @@
                 android:layout_weight="1" />
 
             <Button
-                android:onClick="openInBrowser"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:gravity="center"
-                android:text="open in browser"
-                android:layout_gravity="end" />
+                android:minHeight="60dp"
+                android:onClick="openInBrowser"
+                android:text="open in browser" />
 
         </LinearLayout>
 
@@ -135,7 +138,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="5dp">
 
@@ -160,12 +163,13 @@
                 android:layout_weight="1" />
 
             <Button
-                android:onClick="openChangeReleaseChannel"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:gravity="center"
-                android:text="change"
-                android:layout_gravity="end" />
+                android:minHeight="60dp"
+                android:onClick="openChangeReleaseChannel"
+                android:text="change" />
 
         </LinearLayout>
 

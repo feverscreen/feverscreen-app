@@ -28,7 +28,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_gravity="center" >
+            android:layout_gravity="center">
 
             <ProgressBar
                 android:id="@+id/progressBar2"
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:text="Scanning for devices..."
                 android:gravity="center"
-                android:textSize="18dp"/>
+                android:textSize="18dp" />
 
             <TextView
                 android:id="@+id/auto_connect_text_view"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:text="Will connect automatically after 10s"
                 android:gravity="center"
-                android:textSize="18dp"/>
+                android:textSize="18dp" />
 
             <Button
                 android:id="@+id/refresh_button"
@@ -59,8 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Refresh"
-                android:onClick="refresh"
-                />
+                android:onClick="refresh" />
 
             <Button
                 android:id="@+id/network_settings_button"
@@ -69,8 +68,7 @@
                 android:layout_gravity="center"
                 android:text="Open network settings to enable USB tethering"
                 android:onClick="openNetworkSettingsButton"
-                android:visibility="invisible"
-                />
+                android:visibility="invisible" />
 
         </LinearLayout>
 
