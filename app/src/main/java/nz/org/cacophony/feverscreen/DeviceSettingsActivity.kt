@@ -76,8 +76,9 @@ class DeviceSettingsActivity : AppCompatActivity() {
     private fun getUSBAddr() {
         val url = getUrl("/api/USB0Addr")
         val request = getAuthReq(url)
-        val response = client.newCall(request).execute()
+
         try {
+            val response = client.newCall(request).execute()
             usb0Addr = getResponseBody(response).string()
         } catch (e: Exception) {
             Log.e(TAG, e.toString())

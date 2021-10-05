@@ -4,9 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.preference.PreferenceManager
 import kotlinx.coroutines.delay
+import okhttp3.HttpUrl.parse
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.SocketException
@@ -16,6 +21,7 @@ import kotlin.concurrent.thread
 class Device(
     @Volatile var name: String,
     val hostAddress: String,
+    var isFavourite: Boolean,
     private val port: Int,
     private val activity: Activity) {
     @Volatile
@@ -33,17 +39,19 @@ class Device(
         }
     }
 
-    fun openFeverPage() {
-        openPage("/static/html/fever.html")
-    }
-
-    private fun checkConnectionInterface() {
-        val urlStr = URL("http", hostAddress, 80, "/api/USB0Addr").toString()
+    private fun buildRequest(path: String): Request? {
+        val urlStr = URL("http", hostAddress, 80, path).toString()
         val request = Request.Builder()
             .url(urlStr)
             .addHeader("Authorization", "Basic YWRtaW46ZmVhdGhlcnM=")
             .build()
+        return request
+    }
+
+
+    private fun checkConnectionInterface() {
         try {
+            val request = buildRequest("/api/USB0Addr")
             val response = client.newCall(request).execute()
             val body = response.body()?.string() ?: ""
             connectionInterface = when {
@@ -53,6 +61,18 @@ class Device(
             }
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
+        }
+    }
+
+    fun isValidDevice(): Boolean {
+        return try {
+            val request = buildRequest("/api/version")
+            val response = client.newCall(request).execute()
+            val versionData = JSONObject(getResponseBody(response).string())
+            (versionData.has("appVersion"))
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+            false
         }
     }
 
@@ -76,6 +96,30 @@ class Device(
         i.putExtra("deviceName", name)
         i.putExtra("deviceIP", hostAddress)
         activity.startActivity(i)
+    }
+
+    fun toggleFavourite() {
+        val editor =PreferenceManager.getDefaultSharedPreferences(activity.applicationContext).edit()
+        editor.putBoolean(name, !isFavourite)
+        editor.commit()
+        isFavourite = !isFavourite
+    }
+
+    fun openFeverPage() {
+        openPage("/static/html/fever.html")
+    }
+    private fun getResponseBody(response: Response): ResponseBody {
+        if (!response.isSuccessful) {
+            response.close()
+            throw Exception("call failed. Error: ${response.message()}")  // TODO Add more useful info in exception
+        }
+        val body = response.body()
+        if (body == null) {
+            response.close()
+            throw Exception("failed to get body from response")
+        } else {
+            return body
+        }
     }
 
     private fun openPage(path: String) {

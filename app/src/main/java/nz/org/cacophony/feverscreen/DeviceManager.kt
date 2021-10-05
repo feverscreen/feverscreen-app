@@ -1,8 +1,10 @@
 package nz.org.cacophony.feverscreen
 
 import android.app.Activity
+import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import androidx.preference.PreferenceManager
 import android.util.Log
 import java.net.*
 
@@ -33,14 +35,18 @@ class DeviceManager(
 
                 val port: Int = serviceInfo.port
                 val host: InetAddress = serviceInfo.host
+                val isFav: Boolean = PreferenceManager.getDefaultSharedPreferences(activity.applicationContext).getBoolean(serviceInfo.serviceName, false)
                 Log.i(TAG, "found device $host on port $port")
 
                 val newDevice = Device(
                     serviceInfo.serviceName,
                     serviceInfo.host.hostAddress,
+                    isFav,
                     port,
                     activity)
-                devices.add(newDevice)
+                if (newDevice.isValidDevice()) {
+                    devices.add(newDevice)
+                }
             }
         }
     }

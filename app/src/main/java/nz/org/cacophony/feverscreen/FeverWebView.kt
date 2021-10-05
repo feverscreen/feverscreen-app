@@ -116,6 +116,7 @@ class FeverWebView : AppCompatActivity() {
 
     private fun checkConnectionLoop(extras: Bundle) {
         thread(start = true) {
+            var didRetry = false
             while (open) {
                 Log.d(TAG, "Checking connection to '$uri'")
                 try {
@@ -127,8 +128,13 @@ class FeverWebView : AppCompatActivity() {
                 } catch (e: Exception) {
                     Log.e(TAG, "failed connecting to: $e")
                     runOnUiThread {
-                        uri = extras.getString("uri") ?: ""
-                        myWebView.loadUrl(uri)
+                        if (!didRetry) {
+                            uri = extras.getString("uri") ?: ""
+                            myWebView.loadUrl(uri)
+                            didRetry = true
+                        } else {
+                            onBackPressed()
+                        }
                     }
                 }
                 Thread.sleep(5_000)

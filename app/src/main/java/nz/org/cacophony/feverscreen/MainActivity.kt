@@ -100,15 +100,6 @@ class MainActivity : AppCompatActivity() {
             val now = Calendar.getInstance()
             if (openWebViewAt != null && openWebViewAt!! < now) {
                 runOnUiThread {
-                    var openedDevice = false
-                    for ((_, device) in deviceList.getConnectedMap()) {
-                        if (device.connectionInterface == "usb") {
-                            device.openFeverPage()
-                            openedDevice = true
-                            break
-                        }
-                    }
-                    if (!openedDevice) {
                         when (deviceList.size()) {
                             0 -> {
                                 findViewById<TextView>(R.id.auto_connect_text_view).text = "No cameras found after 10s"
@@ -116,9 +107,19 @@ class MainActivity : AppCompatActivity() {
                             }
                             1 -> deviceList.elementAt(0).openFeverPage()
                             else -> {
+                                val favouriteDevices = deviceList.getConnectedMap().filter { (_,device) -> device.isFavourite }
+                                if (favouriteDevices.size == 1) {
+                                    favouriteDevices.values.elementAt(0).openFeverPage()
+                                } else {
+                                    for ((_, device) in deviceList.getConnectedMap()) {
+                                        if (device.connectionInterface == "usb") {
+                                            device.openFeverPage()
+                                            break
+                                        }
+                                    }
+                                }
                                 findViewById<TextView>(R.id.auto_connect_text_view).text = "Multiple cameras found. Select what one to view"
                             }
-                        }
                     }
                 }
             }

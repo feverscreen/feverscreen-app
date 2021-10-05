@@ -1,5 +1,6 @@
 package nz.org.cacophony.feverscreen
 
+import android.content.Context
 import android.util.Log
 
 class DeviceList {
