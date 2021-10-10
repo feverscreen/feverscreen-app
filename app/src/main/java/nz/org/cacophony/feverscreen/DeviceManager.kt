@@ -10,9 +10,10 @@ import java.net.*
 
 const val SERVICE_TYPE = "_cacophonator-management._tcp"
 class DeviceManager(
-        private val nsdManager: NsdManager,
-        private val devices: DeviceList,
-        private val activity: Activity) {
+    private val nsdManager: NsdManager,
+    private val devices: DeviceList,
+    private val activity: Activity) {
+
 
     fun startScan() {
         nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)

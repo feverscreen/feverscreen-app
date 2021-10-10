@@ -3,6 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/show_all_device"
+        android:onClick="showAllDevices"
+        android:title="Show All Devices" />
+    <item
         android:id="@+id/releases_page"
         android:orderInCategory="100"
         android:title="Releases page"

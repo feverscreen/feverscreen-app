@@ -58,5 +58,6 @@ class DeviceListAdapter(private val devices: DeviceList) : RecyclerView.Adapter<
     }
 
     override fun getItemCount() = devices.size()
+
 }
 

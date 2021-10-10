@@ -58,8 +58,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Refresh"
-                android:onClick="refresh" />
+                android:onClick="clickRefresh"
+                android:text="Refresh" />
 
             <Button
                 android:id="@+id/network_settings_button"

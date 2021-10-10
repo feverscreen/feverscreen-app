@@ -7,6 +7,7 @@ class DeviceList {
     private val connectedDevices = sortedMapOf<String, Device>()
     private val allDevices = sortedMapOf<String, Device>()
     private var onChanged: (() -> Unit)? = null
+    var filterDevices = true
 
     @Synchronized
     fun add(d: Device) {
@@ -31,7 +32,7 @@ class DeviceList {
 
     @Synchronized
     fun size(): Int {
-        return connectedDevices.size
+        return getConnectedMap().size
     }
 
     @Synchronized
@@ -45,6 +46,12 @@ class DeviceList {
 
     @Synchronized
     fun getConnectedMap(): Map<String, Device> {
+        if (filterDevices) {
+            val devices = connectedDevices.filter { (_,device) -> device.isFavourite || device.connectionInterface == "usb" }
+            if (devices.isNotEmpty()) {
+                return devices
+            }
+        }
         return connectedDevices
     }
 

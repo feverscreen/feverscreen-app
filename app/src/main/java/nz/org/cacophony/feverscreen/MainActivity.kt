@@ -121,6 +121,7 @@ class MainActivity : AppCompatActivity() {
                                 findViewById<TextView>(R.id.auto_connect_text_view).text = "Multiple cameras found. Select what one to view"
                             }
                     }
+                    deviceList.filterDevices = true
                 }
             }
         }
@@ -234,7 +235,12 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun refresh(view: View) {
+
+    fun clickRefresh(v:View) {
+        refresh()
+    }
+
+    private fun refresh() {
         thread {
             openWebViewIn()
             val refreshButton = findViewById<Button>(R.id.refresh_button)
@@ -252,6 +258,11 @@ class MainActivity : AppCompatActivity() {
                 refreshButton.isClickable = true
             }
         }
+    }
+
+    fun showAllDevices(item: MenuItem) {
+        deviceList.filterDevices = false
+        onDeviceUpdate()
     }
 
     fun openReleasesPage(item: MenuItem) {
