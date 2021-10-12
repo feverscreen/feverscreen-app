@@ -16,7 +16,11 @@ class DeviceManager(
 
 
     fun startScan() {
-        nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+        try {
+            nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+        }
     }
 
     fun getResolveListener(): NsdManager.ResolveListener {
@@ -45,9 +49,9 @@ class DeviceManager(
                     isFav,
                     port,
                     activity)
-                if (newDevice.isValidDevice()) {
+//                if (newDevice.isValidDevice()) {
                     devices.add(newDevice)
-                }
+//                }
             }
         }
     }
@@ -84,6 +88,10 @@ class DeviceManager(
     }
 
     fun tearDown() {
-        nsdManager.stopServiceDiscovery(discoveryListener)
+        try {
+            nsdManager.stopServiceDiscovery(discoveryListener)
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+        }
     }
 }

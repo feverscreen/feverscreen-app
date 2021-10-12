@@ -69,7 +69,7 @@ class Device(
             val request = buildRequest("/api/version")
             val response = client.newCall(request).execute()
             val versionData = JSONObject(getResponseBody(response).string())
-            (versionData.has("appVersion"))
+            (versionData.has("appUpdateCandidate"))
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             false
